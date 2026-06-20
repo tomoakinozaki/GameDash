@@ -10,6 +10,7 @@ const supabase = createClient(
 );
 
 type FilterType = 'all' | 'free' | 'free_limited' | 'discounted';
+type StoreFilter = 'all' | 'Epic Games Store' | 'FreeToGame' | 'GOG' | 'Steam';
 
 interface Game {
   id: number;
@@ -28,8 +29,9 @@ interface Game {
 export default function Home({ initialData }: { initialData?: Game[] }) {
   const [games, setGames] = useState(initialData || []);
   const [filter, setFilter] = useState<FilterType>('all');
+  const [storeFilter, setStoreFilter] = useState<StoreFilter>('all');
 
-  const fetchData = async (filterType: FilterType) => {
+  const fetchData = async (filterType: FilterType, store: StoreFilter) => {
     let query = supabase.from('game_price_history').select('*');
 
     if (filterType === 'free') {
@@ -40,13 +42,22 @@ export default function Home({ initialData }: { initialData?: Game[] }) {
       query = query.eq('is_discounted', true);
     }
 
+    if (store !== 'all') {
+      query = query.eq('store', store);
+    }
+
     const { data } = await query.order('created_at', { ascending: false });
     setGames(data || []);
   };
 
   const handleFilterChange = (newFilter: FilterType) => {
     setFilter(newFilter);
-    fetchData(newFilter);
+    fetchData(newFilter, storeFilter);
+  };
+
+  const handleStoreChange = (newStore: StoreFilter) => {
+    setStoreFilter(newStore);
+    fetchData(filter, newStore);
   };
 
   return (
@@ -56,7 +67,7 @@ export default function Home({ initialData }: { initialData?: Game[] }) {
         <span className="text-sm text-gray-500">{games.length} 件の情報を表示中</span>
       </div>
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-4">
         <button
           onClick={() => handleFilterChange('all')}
           className={`px-4 py-2 rounded-lg font-bold shadow-sm transition-all ${
@@ -89,6 +100,23 @@ export default function Home({ initialData }: { initialData?: Game[] }) {
         >
           割引ゲーム
         </button>
+      </div>
+
+      <div className="flex gap-2 mb-6">
+        <span className="px-3 py-2 text-sm font-semibold text-gray-500">ストア:</span>
+        {(['all', 'Epic Games Store', 'FreeToGame', 'GOG', 'Steam'] as StoreFilter[]).map((store) => (
+          <button
+            key={store}
+            onClick={() => handleStoreChange(store)}
+            className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+              storeFilter === store
+                ? 'bg-gray-800 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            {store === 'all' ? 'すべて' : store}
+          </button>
+        ))}
       </div>
 
       <div className="overflow-x-auto shadow-md rounded-lg">
