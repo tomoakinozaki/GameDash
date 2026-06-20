@@ -1,13 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { getAffiliateUrl } from './utils/affiliate';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
 
 type FilterType = 'all' | 'free' | 'free_limited' | 'discounted';
 type StoreFilter = 'all' | 'Epic Games Store' | 'FreeToGame' | 'GOG' | 'Steam';
@@ -27,6 +22,11 @@ interface Game {
 }
 
 export default function Home({ initialData }: { initialData?: Game[] }) {
+  const supabase = useMemo(() => createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  ), []);
+
   const [games, setGames] = useState(initialData || []);
   const [filter, setFilter] = useState<FilterType>('all');
   const [storeFilter, setStoreFilter] = useState<StoreFilter>('all');
