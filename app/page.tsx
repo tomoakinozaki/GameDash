@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { getAffiliateUrl } from './utils/affiliate';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
 );
 
-type FilterType = 'all' | 'free' | 'free_limited';
+type FilterType = 'all' | 'free' | 'free_limited' | 'discounted';
 
 interface Game {
   id: number;
@@ -18,6 +19,8 @@ interface Game {
   original_price: number;
   is_free: boolean;
   is_free_limited: boolean;
+  is_discounted: boolean;
+  discount_rate: number;
   free_end_date: string | null;
   store_url: string;
 }
@@ -33,6 +36,8 @@ export default function Home({ initialData }: { initialData?: Game[] }) {
       query = query.eq('is_free', true);
     } else if (filterType === 'free_limited') {
       query = query.eq('is_free_limited', true);
+    } else if (filterType === 'discounted') {
+      query = query.eq('is_discounted', true);
     }
 
     const { data } = await query.order('created_at', { ascending: false });
@@ -76,6 +81,14 @@ export default function Home({ initialData }: { initialData?: Game[] }) {
         >
           期間限定無料
         </button>
+        <button
+          onClick={() => handleFilterChange('discounted')}
+          className={`px-4 py-2 rounded-lg font-bold shadow-sm transition-all ${
+            filter === 'discounted' ? 'bg-red-500 text-white' : 'bg-white text-gray-800 border border-gray-300'
+          }`}
+        >
+          割引ゲーム
+        </button>
       </div>
 
       <div className="overflow-x-auto shadow-md rounded-lg">
@@ -94,7 +107,7 @@ export default function Home({ initialData }: { initialData?: Game[] }) {
               <tr key={game.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 font-medium">
                   <a
-                    href={game.store_url}
+                    href={getAffiliateUrl(game)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-indigo-600 hover:underline hover:text-indigo-800"
@@ -122,9 +135,9 @@ export default function Home({ initialData }: { initialData?: Game[] }) {
                     <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-bold">
                       常時無料
                     </span>
-                  ) : game.original_price > 0 ? (
+                  ) : game.is_discounted ? (
                     <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">
-                      {Math.round(((game.original_price - game.price) / game.original_price) * 100)}% OFF
+                      {game.discount_rate}% OFF
                     </span>
                   ) : (
                     <span className="text-gray-400 text-xs">-</span>

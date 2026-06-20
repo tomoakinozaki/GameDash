@@ -30,38 +30,106 @@ async function syncFreeGames() {
 
   console.log(`CheapShark: ${limitedFreeFromCheap.length}件の期間限定無料を検出`);
 
-  // 2. Epic Games Storeから無料プロモーションを取得
+  // 2. Epic Games Storeからプロモーションを取得（無料+割引）
   const epicRes = await fetch('https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=ja&country=JP&allowCountries=JP');
   const epicData = await epicRes.json();
 
   const limitedFreeFromEpic = [];
+  const discountedFromEpic = [];
   const elements = epicData?.data?.Catalog?.searchStore?.elements || [];
 
   for (const game of elements) {
     if (game.promotions) {
       const currentPromo = game.promotions.promotionalOffers?.find(
-        p => p.promotionalOffers?.some(o => o.discountSetting?.discountPercentage === 0)
+        p => p.promotionalOffers?.some(o => o.discountSetting?.discountPercentage !== undefined)
       );
 
       if (currentPromo) {
-        const offer = currentPromo.promotionalOffers.find(o => o.discountSetting?.discountPercentage === 0);
-        limitedFreeFromEpic.push({
-          game_title: game.title,
-          store: 'Epic Games Store',
-          price: 0,
-          original_price: 0,
-          is_free: true,
-          is_free_limited: true,
-          free_end_date: offer?.endDate || null,
-          store_url: `https://store.epicgames.com/ja/p/${game.productSlug || ''}`
-        });
+        const offer = currentPromo.promotionalOffers.find(o => o.discountSetting?.discountPercentage !== undefined);
+        const discountPercent = offer?.discountSetting?.discountPercentage || 0;
+        const pageSlug = game.catalogNs?.mappings?.[0]?.pageSlug || '';
+        const price = game.price?.totalPrice;
+        const isFree = discountPercent === 0 || price?.discountPrice === 0;
+
+        if (isFree) {
+          limitedFreeFromEpic.push({
+            game_title: game.title,
+            store: 'Epic Games Store',
+            price: 0,
+            original_price: price?.originalPrice || 0,
+            is_free: true,
+            is_free_limited: true,
+            is_discounted: false,
+            discount_rate: 0,
+            free_end_date: offer?.endDate || null,
+            store_url: `https://store.epicgames.com/ja/p/${pageSlug}`
+          });
+        } else {
+          discountedFromEpic.push({
+            game_title: game.title,
+            store: 'Epic Games Store',
+            price: price?.discountPrice || 0,
+            original_price: price?.originalPrice || 0,
+            is_free: false,
+            is_free_limited: false,
+            is_discounted: true,
+            discount_rate: discountPercent,
+            free_end_date: null,
+            store_url: `https://store.epicgames.com/ja/p/${pageSlug}`
+          });
+        }
       }
     }
   }
 
-  console.log(`Epic Games: ${limitedFreeFromEpic.length}件の期間限定無料を検出`);
+  console.log(`Epic Games: ${limitedFreeFromEpic.length}件の無料, ${discountedFromEpic.length}件の割引を検出`);
 
-  // 3. FreeToGameから常時無料を取得
+  // 3. GOGから無料・割引ゲームを取得
+  const gogGames = [];
+  for (let page = 1; page <= 10; page++) {
+    const gogRes = await fetch(`https://www.gog.com/games/ajax/filtered?mediaType=game&page=${page}`);
+    const gogData = await gogRes.json();
+    const products = gogData.products || [];
+    if (products.length === 0) break;
+    gogGames.push(...products);
+    await delay(100);
+  }
+
+  // 無料ゲーム
+  const limitedFreeFromGog = gogGames
+    .filter(game => game.price?.isFree === true)
+    .map(game => ({
+      game_title: game.title,
+      store: 'GOG',
+      price: 0,
+      original_price: parseFloat(game.price?.baseAmount) || 0,
+      is_free: true,
+      is_free_limited: true,
+      is_discounted: false,
+      discount_rate: 0,
+      free_end_date: game.salesVisibility?.to ? new Date(game.salesVisibility.to * 1000).toISOString() : null,
+      store_url: `https://www.gog.com${game.url}`
+    }));
+
+  // 割引ゲーム（無料ではないもの）
+  const discountedFromGog = gogGames
+    .filter(game => game.price?.isDiscounted === true && game.price?.isFree !== true)
+    .map(game => ({
+      game_title: game.title,
+      store: 'GOG',
+      price: parseFloat(game.price?.finalAmount) || 0,
+      original_price: parseFloat(game.price?.baseAmount) || 0,
+      is_free: false,
+      is_free_limited: false,
+      is_discounted: true,
+      discount_rate: game.price?.discountPercentage || 0,
+      free_end_date: null,
+      store_url: `https://www.gog.com${game.url}`
+    }));
+
+  console.log(`GOG: ${limitedFreeFromGog.length}件の無料, ${discountedFromGog.length}件の割引を検出`);
+
+  // 4. FreeToGameから常時無料を取得
   const freeRes = await fetch('https://www.freetogame.com/api/games?platform=pc');
   const freeGames = await freeRes.json();
 
@@ -76,8 +144,8 @@ async function syncFreeGames() {
     store_url: g.game_url
   }));
 
-  // 4. 全データをDBに保存
-  const allData = [...limitedFreeFromCheap, ...limitedFreeFromEpic, ...alwaysFree];
+  // 5. 全データをDBに保存
+  const allData = [...limitedFreeFromCheap, ...limitedFreeFromEpic, ...discountedFromEpic, ...limitedFreeFromGog, ...discountedFromGog, ...alwaysFree];
 
   for (const item of allData) {
     const { error } = await supabase.from('game_price_history').upsert(item, { onConflict: 'game_title' });
