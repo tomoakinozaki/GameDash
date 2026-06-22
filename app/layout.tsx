@@ -29,6 +29,27 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <header className="bg-indigo-600 text-white py-4 shadow-md">
+          <div className="max-w-5xl mx-auto px-8 flex justify-between items-center">
+            <Link href="/" className="text-xl font-bold hover:text-indigo-200 transition-colors">
+              GameDash
+            </Link>
+            <nav className="flex gap-6">
+              <Link href="/" className="hover:text-indigo-200 transition-colors">
+                ホーム
+              </Link>
+              <Link href="/privacy-policy" className="hover:text-indigo-200 transition-colors">
+                プライバシー
+              </Link>
+              <Link href="/terms" className="hover:text-indigo-200 transition-colors">
+                利用規約
+              </Link>
+              <Link href="/contact" className="hover:text-indigo-200 transition-colors">
+                お問い合わせ
+              </Link>
+            </nav>
+          </div>
+        </header>
         {children}
         <footer className="bg-gray-800 text-gray-400 py-8 mt-auto">
           <div className="max-w-5xl mx-auto px-8">
