@@ -29,6 +29,14 @@ export default function RootLayout({
       lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9772336492422057"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <header className="bg-indigo-600 text-white py-4 shadow-md">
           <div className="max-w-5xl mx-auto px-8 flex justify-between items-center">
@@ -71,12 +79,6 @@ export default function RootLayout({
           </div>
         </footer>
       </body>
-      <Script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9772336492422057"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-      />
     </html>
   );
 }
