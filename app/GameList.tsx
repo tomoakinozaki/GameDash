@@ -30,6 +30,21 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
   const [games, setGames] = useState(initialData);
   const [filter, setFilter] = useState<FilterType>('all');
   const [storeFilter, setStoreFilter] = useState<StoreFilter>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
+  const filteredGames = useMemo(() => {
+    return games.filter(game =>
+      game.game_title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [games, searchQuery]);
+
+  const totalPages = Math.ceil(filteredGames.length / itemsPerPage);
+  const paginatedGames = filteredGames.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const fetchData = async (filterType: FilterType, store: StoreFilter) => {
     let query = supabase.from('game_price_history').select('*');
@@ -52,19 +67,36 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
 
   const handleFilterChange = (newFilter: FilterType) => {
     setFilter(newFilter);
+    setCurrentPage(1);
     fetchData(newFilter, storeFilter);
   };
 
   const handleStoreChange = (newStore: StoreFilter) => {
     setStoreFilter(newStore);
+    setCurrentPage(1);
     fetchData(filter, newStore);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
   return (
     <main className="p-8 max-w-5xl mx-auto bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">ゲーム価格比較</h1>
-        <span className="text-sm text-gray-500">{games.length} 件の情報を表示中</span>
+        <span className="text-sm text-gray-500">{filteredGames.length} 件の情報を表示中</span>
+      </div>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="ゲーム名で検索..."
+          value={searchQuery}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
       </div>
 
       <div className="flex gap-2 mb-4">
@@ -131,7 +163,7 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {games.map((game) => (
+            {paginatedGames.map((game) => (
               <tr key={game.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 font-medium">
                   <a
@@ -181,6 +213,28 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <button
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 rounded-lg font-medium bg-white border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            前へ
+          </button>
+          <span className="px-4 py-2 text-gray-700">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 rounded-lg font-medium bg-white border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            次へ
+          </button>
+        </div>
+      )}
     </main>
   );
 }
