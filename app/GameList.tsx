@@ -6,6 +6,8 @@ import { getAffiliateUrl } from './utils/affiliate';
 
 type FilterType = 'all' | 'free' | 'free_limited' | 'discounted';
 type StoreFilter = 'all' | 'Epic Games Store' | 'FreeToGame' | 'GOG' | 'Steam';
+type SortKey = 'game_title' | 'store' | 'price' | 'discount_rate';
+type SortDirection = 'asc' | 'desc';
 
 interface Game {
   id: number;
@@ -32,13 +34,27 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
   const [storeFilter, setStoreFilter] = useState<StoreFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortKey, setSortKey] = useState<SortKey>('game_title');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const itemsPerPage = 20;
 
   const filteredGames = useMemo(() => {
-    return games.filter(game =>
+    const filtered = games.filter(game =>
       game.game_title.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [games, searchQuery]);
+
+    return filtered.sort((a, b) => {
+      let aVal = a[sortKey];
+      let bVal = b[sortKey];
+
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [games, searchQuery, sortKey, sortDirection]);
 
   const totalPages = Math.ceil(filteredGames.length / itemsPerPage);
   const paginatedGames = filteredGames.slice(
@@ -80,6 +96,21 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
     setCurrentPage(1);
+  };
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDirection(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDirection('asc');
+    }
+    setCurrentPage(1);
+  };
+
+  const getSortIcon = (key: SortKey) => {
+    if (sortKey !== key) return '↕';
+    return sortDirection === 'asc' ? '↑' : '↓';
   };
 
   return (
@@ -155,9 +186,24 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
         <table className="min-w-full bg-white text-gray-900">
           <thead className="bg-gray-100 border-b border-gray-200">
             <tr>
-              <th className="px-6 py-4 text-left font-semibold">タイトル</th>
-              <th className="px-6 py-4 text-left font-semibold">ストア</th>
-              <th className="px-6 py-4 text-left font-semibold">価格</th>
+              <th
+                onClick={() => handleSort('game_title')}
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+              >
+                タイトル {getSortIcon('game_title')}
+              </th>
+              <th
+                onClick={() => handleSort('store')}
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+              >
+                ストア {getSortIcon('store')}
+              </th>
+              <th
+                onClick={() => handleSort('price')}
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+              >
+                価格 {getSortIcon('price')}
+              </th>
               <th className="px-6 py-4 text-left font-semibold">状態</th>
               <th className="px-6 py-4 text-left font-semibold">有効期限</th>
             </tr>
