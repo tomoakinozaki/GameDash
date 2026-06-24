@@ -22,6 +22,14 @@ export const getAffiliateUrl = (game: GameForAffiliate): string => {
     }
   }
 
+  // Indiegalaアフィリエイト
+  if (game.store === 'Indiegala') {
+    const affiliateId = process.env.NEXT_PUBLIC_INDIEGALA_AFFILIATE;
+    if (affiliateId && game.store_url.includes('indiegala.com')) {
+      return `${game.store_url}?affiliate=${affiliateId}`;
+    }
+  }
+
   // その他はそのまま返す
   return game.store_url;
 };
