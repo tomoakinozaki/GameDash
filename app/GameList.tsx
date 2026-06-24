@@ -202,30 +202,30 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
             <tr>
               <th
                 onClick={() => handleSort('game_title')}
-                className="w-[40%] px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+                className="w-[35%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
               >
                 タイトル {getSortIcon('game_title')}
               </th>
               <th
                 onClick={() => handleSort('store')}
-                className="w-[15%] px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+                className="w-[15%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
               >
                 ストア {getSortIcon('store')}
               </th>
               <th
                 onClick={() => handleSort('price')}
-                className="w-[25%] px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+                className="w-[20%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
               >
                 価格 {getSortIcon('price')}
               </th>
-              <th className="w-[10%] px-6 py-4 text-left font-semibold">状態</th>
-              <th className="w-[10%] px-6 py-4 text-left font-semibold">有効期限</th>
+              <th className="w-[15%] px-4 py-4 text-left font-semibold whitespace-nowrap">状態</th>
+              <th className="w-[15%] px-4 py-4 text-left font-semibold whitespace-nowrap">有効期限</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {paginatedGames.map((game) => (
               <tr key={game.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 font-medium truncate">
+                <td className="px-4 py-4 font-medium truncate">
                   <a
                     href={getAffiliateUrl(game)}
                     target="_blank"
@@ -235,8 +235,8 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
                     {game.game_title} ↗
                   </a>
                 </td>
-                <td className="px-6 py-4 text-gray-600 truncate">{game.store}</td>
-                <td className="px-6 py-4">
+                <td className="px-4 py-4 text-gray-600 truncate">{game.store}</td>
+                <td className="px-4 py-4">
                   {game.is_free ? (
                     <span className="font-bold text-emerald-600">無料</span>
                   ) : (
@@ -252,7 +252,7 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-4 py-4 whitespace-nowrap">
                   {game.is_free_limited ? (
                     <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-bold">
                       期間限定
@@ -269,7 +269,7 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
                     <span className="text-gray-400 text-xs">-</span>
                   )}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-600 truncate">
+                <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
                   {game.free_end_date
                     ? new Date(game.free_end_date).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })
                     : '-'}
