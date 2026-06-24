@@ -295,10 +295,12 @@ async function syncFreeGames() {
   // Extract game data from data attributes
   const igTitleRegex = /data-prod-title="([^"]+)"/g;
   const igSlugRegex = /data-prod-slugged="([^"]+)"/g;
-  const igTitles = [], igSlugs = [];
+  const igIdRegex = /data-prod-id="([^"]+)"/g;
+  const igTitles = [], igSlugs = [], igIds = [];
   let igM;
   while ((igM = igTitleRegex.exec(indiegalaSaleHtml)) !== null) igTitles.push(igM[1]);
   while ((igM = igSlugRegex.exec(indiegalaSaleHtml)) !== null) igSlugs.push(igM[1]);
+  while ((igM = igIdRegex.exec(indiegalaSaleHtml)) !== null) igIds.push(igM[1]);
 
   // Extract prices and discounts
   const igDiscountRegex = /main-list-results-item-discount[^>]*>([^<]+)/g;
@@ -312,6 +314,7 @@ async function syncFreeGames() {
   for (let i = 0; i < igTitles.length; i++) {
     const title = igTitles[i];
     const slug = igSlugs[i];
+    const prodId = igIds[i];
     const discountStr = igDiscounts[i] || '';
     const priceOldStr = igPriceOlds[i] || '';
     const priceNewStr = igPriceNews[i] || '';
@@ -335,7 +338,7 @@ async function syncFreeGames() {
       is_discounted: discountRate > 0 && !isFree,
       discount_rate: discountRate,
       free_end_date: null,
-      store_url: `https://www.indiegala.com/store/game/${slug}`
+      store_url: `https://www.indiegala.com/store/game/${slug}/${prodId}`
     });
   }
 
