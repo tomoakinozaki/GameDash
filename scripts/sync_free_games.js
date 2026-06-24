@@ -144,6 +144,9 @@ async function syncFreeGames() {
       const normalPriceUsd = parseFloat(deal.normalPrice);
       const discountRate = Math.round(parseFloat(deal.savings));
 
+      // Epic Games Storeの検索URLを使用
+      const searchUrl = `https://store.epicgames.com/ja/browse?q=${encodeURIComponent(deal.title)}&sortBy=relevancy&sortDir=DESC&count=40`;
+
       return {
         game_title: deal.title,
         store: 'Epic Games Store',
@@ -156,7 +159,7 @@ async function syncFreeGames() {
         is_discounted: salePriceUsd > 0 && discountRate > 0,
         discount_rate: discountRate,
         free_end_date: null,
-        store_url: `https://store.epicgames.com/ja/p/${deal.dealID}`
+        store_url: searchUrl
       };
     });
 
