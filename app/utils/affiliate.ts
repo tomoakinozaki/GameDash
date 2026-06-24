@@ -26,7 +26,7 @@ export const getAffiliateUrl = (game: GameForAffiliate): string => {
   if (game.store === 'Indiegala') {
     const affiliateId = process.env.NEXT_PUBLIC_INDIEGALA_AFFILIATE;
     if (affiliateId && game.store_url.includes('indiegala.com')) {
-      return `${game.store_url}?affiliate=${affiliateId}`;
+      return `${game.store_url}?ref=${affiliateId}`;
     }
   }
 
