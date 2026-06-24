@@ -133,7 +133,34 @@ async function syncFreeGames() {
 
   console.log(`Epic Games: ${limitedFreeFromEpic.length}件の無料, ${discountedFromEpic.length}件の割引, ${upcomingFromEpic.length}件の今後無料予定を検出`);
 
-  console.log(`Epic Games: ${limitedFreeFromEpic.length}件の無料, ${discountedFromEpic.length}件の割引を検出`);
+  // 2-2. CheapSharkからEpic Games Storeの通常セール情報を取得
+  const epicCheapRes = await fetch('https://www.cheapshark.com/api/1.0/deals?pageSize=100&storeID=25&upperPrice=50');
+  const epicCheapDeals = await epicCheapRes.json();
+
+  const epicCheapGames = epicCheapDeals
+    .filter(deal => parseFloat(deal.savings) > 5)
+    .map(deal => {
+      const salePriceUsd = parseFloat(deal.salePrice);
+      const normalPriceUsd = parseFloat(deal.normalPrice);
+      const discountRate = Math.round(parseFloat(deal.savings));
+
+      return {
+        game_title: deal.title,
+        store: 'Epic Games Store',
+        price: salePriceUsd,
+        price_jpy: Math.round(salePriceUsd * USD_TO_JPY),
+        original_price: normalPriceUsd,
+        original_price_jpy: Math.round(normalPriceUsd * USD_TO_JPY),
+        is_free: salePriceUsd === 0,
+        is_free_limited: false,
+        is_discounted: salePriceUsd > 0 && discountRate > 0,
+        discount_rate: discountRate,
+        free_end_date: null,
+        store_url: `https://store.epicgames.com/ja/p/${deal.dealID}`
+      };
+    });
+
+  console.log(`Epic Games (CheapShark): ${epicCheapGames.length}件のセールを検出`);
 
   // 3. GOGから無料・割引ゲームを取得（USD → JPY変換）
   const gogGames = [];
@@ -345,7 +372,7 @@ async function syncFreeGames() {
   console.log(`Indiegala セール: ${indiegalaSaleGames.length}件を検出`);
 
   // 8. 全データをDBに保存
-  const allData = [...steamGames, ...limitedFreeFromEpic, ...discountedFromEpic, ...upcomingFromEpic, ...limitedFreeFromGog, ...discountedFromGog, ...alwaysFree, ...itchGames, ...indiegalaGames, ...indiegalaSaleGames];
+  const allData = [...steamGames, ...limitedFreeFromEpic, ...discountedFromEpic, ...upcomingFromEpic, ...epicCheapGames, ...limitedFreeFromGog, ...discountedFromGog, ...alwaysFree, ...itchGames, ...indiegalaGames, ...indiegalaSaleGames];
 
   for (const item of allData) {
     const { error } = await supabase.from('game_price_history').upsert(item, { onConflict: 'game_title' });
