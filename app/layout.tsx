@@ -14,9 +14,46 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GameDash - ゲーム価格比較サイト | Steam、Epic、GOGの価格を一か所で",
+  title: {
+    default: "GameDash - ゲーム価格比較サイト | Steam、Epic、GOGの価格を一か所で",
+    template: "%s | GameDash",
+  },
   description: "Steam、Epic Games Store、GOG、itch.io、Indiegalaのゲーム価格を比較。無料ゲームや割引情報をリアルタイムで確認。日本円表示対応。",
-  keywords: "ゲーム, 価格比較, Steam, Epic Games, GOG, 無料ゲーム, セール, GameDash",
+  keywords: "ゲーム, 価格比較, Steam, Epic Games, GOG, itch.io, Indiegala, 無料ゲーム, セール, GameDash, PCゲーム",
+  authors: [{ name: "GameDash" }],
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    url: "https://gamedash.vercel.app",
+    siteName: "GameDash",
+    title: "GameDash - ゲーム価格比較サイト",
+    description: "Steam、Epic Games Store、GOG、itch.io、Indiegalaのゲーム価格を比較。無料ゲームや割引情報をリアルタイムで確認。",
+    images: [
+      {
+        url: "https://gamedash.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "GameDash - ゲーム価格比較サイト",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GameDash - ゲーム価格比較サイト",
+    description: "Steam、Epic Games Store、GOG、itch.io、Indiegalaのゲーム価格を比較。",
+    images: ["https://gamedash.vercel.app/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

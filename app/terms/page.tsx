@@ -1,3 +1,12 @@
+export const metadata = {
+  title: "利用規約",
+  description: "GameDashの利用規約。サービスの利用条件について。",
+  openGraph: {
+    title: "利用規約 | GameDash",
+    description: "GameDashの利用規約。サービスの利用条件について。",
+  },
+};
+
 export default function Terms() {
   return (
     <main className="p-8 max-w-4xl mx-auto bg-gray-50 min-h-screen">

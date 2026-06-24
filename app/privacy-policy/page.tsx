@@ -1,3 +1,12 @@
+export const metadata = {
+  title: "プライバシーポリシー",
+  description: "GameDashのプライバシーポリシー。収集する情報と利用目的について。",
+  openGraph: {
+    title: "プライバシーポリシー | GameDash",
+    description: "GameDashのプライバシーポリシー。収集する情報と利用目的について。",
+  },
+};
+
 export default function PrivacyPolicy() {
   return (
     <main className="p-8 max-w-4xl mx-auto bg-gray-50 min-h-screen">

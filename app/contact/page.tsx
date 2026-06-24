@@ -1,3 +1,12 @@
+export const metadata = {
+  title: "お問い合わせ",
+  description: "GameDashへのお問い合わせ。バグ報告、機能リクエスト、パートナーシップについて。",
+  openGraph: {
+    title: "お問い合わせ | GameDash",
+    description: "GameDashへのお問い合わせ。バグ報告、機能リクエスト、パートナーシップについて。",
+  },
+};
+
 export default function Contact() {
   return (
     <main className="p-8 max-w-4xl mx-auto bg-gray-50 min-h-screen">

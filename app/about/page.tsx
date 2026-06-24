@@ -1,3 +1,12 @@
+export const metadata = {
+  title: "運営者情報",
+  description: "GameDashの運営者情報。ゲーム価格比較サイトの特徴とデータソースについて。",
+  openGraph: {
+    title: "運営者情報 | GameDash",
+    description: "GameDashの運営者情報。ゲーム価格比較サイトの特徴とデータソースについて。",
+  },
+};
+
 export default function About() {
   return (
     <main className="p-8 max-w-4xl mx-auto bg-gray-50 min-h-screen">
