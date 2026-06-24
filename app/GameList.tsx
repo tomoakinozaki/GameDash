@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { getAffiliateUrl } from './utils/affiliate';
+import { getAffiliateUrl, getAmazonUrl } from './utils/affiliate';
 
 type FilterType = 'all' | 'free' | 'free_limited' | 'discounted';
 type StoreFilter = 'all' | 'Epic Games Store' | 'FreeToGame' | 'GOG' | 'Steam' | 'itch.io' | 'Indiegala';
@@ -202,24 +202,25 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
             <tr>
               <th
                 onClick={() => handleSort('game_title')}
-                className="w-[35%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+                className="w-[30%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
               >
                 タイトル {getSortIcon('game_title')}
               </th>
               <th
                 onClick={() => handleSort('store')}
-                className="w-[15%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+                className="w-[12%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
               >
                 ストア {getSortIcon('store')}
               </th>
               <th
                 onClick={() => handleSort('price')}
-                className="w-[20%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
+                className="w-[18%] px-4 py-4 text-left font-semibold cursor-pointer hover:bg-gray-200 transition-colors"
               >
                 価格 {getSortIcon('price')}
               </th>
-              <th className="w-[15%] px-4 py-4 text-left font-semibold whitespace-nowrap">状態</th>
-              <th className="w-[15%] px-4 py-4 text-left font-semibold whitespace-nowrap">有効期限</th>
+              <th className="w-[12%] px-4 py-4 text-left font-semibold whitespace-nowrap">状態</th>
+              <th className="w-[12%] px-4 py-4 text-left font-semibold whitespace-nowrap">有効期限</th>
+              <th className="w-[16%] px-4 py-4 text-left font-semibold whitespace-nowrap">Amazon</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -273,6 +274,16 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
                   {game.free_end_date
                     ? new Date(game.free_end_date).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })
                     : '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap">
+                  <a
+                    href={getAmazonUrl(game.game_title)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-orange-600 hover:underline hover:text-orange-800 text-sm"
+                  >
+                    Amazonで検索 ↗
+                  </a>
                 </td>
               </tr>
             ))}
