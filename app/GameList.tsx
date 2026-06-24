@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 import { getAffiliateUrl } from './utils/affiliate';
 
 type FilterType = 'all' | 'free' | 'free_limited' | 'discounted';
-type StoreFilter = 'all' | 'Epic Games Store' | 'FreeToGame' | 'GOG' | 'Steam';
-type SortKey = 'game_title' | 'store' | 'price' | 'discount_rate';
+type StoreFilter = 'all' | 'Epic Games Store' | 'FreeToGame' | 'GOG' | 'Steam' | 'itch.io' | 'Indiegala';
+type SortKey = 'game_title' | 'store' | 'price' | 'price_jpy' | 'discount_rate';
 type SortDirection = 'asc' | 'desc';
 
 interface Game {
@@ -14,7 +14,9 @@ interface Game {
   game_title: string;
   store: string;
   price: number;
+  price_jpy: number;
   original_price: number;
+  original_price_jpy: number;
   is_free: boolean;
   is_free_limited: boolean;
   is_discounted: boolean;
@@ -167,7 +169,7 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
 
       <div className="flex gap-2 mb-6">
         <span className="px-3 py-2 text-sm font-semibold text-gray-500">ストア:</span>
-        {(['all', 'Epic Games Store', 'FreeToGame', 'GOG', 'Steam'] as StoreFilter[]).map((store) => (
+        {(['all', 'Epic Games Store', 'FreeToGame', 'GOG', 'Steam', 'itch.io', 'Indiegala'] as StoreFilter[]).map((store) => (
           <button
             key={store}
             onClick={() => handleStoreChange(store)}
@@ -227,8 +229,14 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
                     <span className="font-bold text-emerald-600">無料</span>
                   ) : (
                     <div>
-                      <span className="text-gray-400 line-through text-sm mr-2">${game.original_price}</span>
-                      <span className="font-bold text-indigo-700">${game.price}</span>
+                      <div className="text-gray-400 line-through text-sm">
+                        ${game.original_price}
+                        {game.original_price_jpy > 0 && <span className="ml-1">¥{game.original_price_jpy.toLocaleString()}</span>}
+                      </div>
+                      <div className="font-bold text-indigo-700">
+                        ${game.price}
+                        {game.price_jpy > 0 && <span className="ml-1">¥{game.price_jpy.toLocaleString()}</span>}
+                      </div>
                     </div>
                   )}
                 </td>
