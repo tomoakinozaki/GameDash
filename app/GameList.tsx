@@ -117,9 +117,21 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
 
   return (
     <main className="p-8 max-w-5xl mx-auto bg-gray-50 min-h-screen">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">ゲーム価格比較 - GameDash</h1>
+        <p className="text-gray-600 leading-relaxed mb-4">
+          Steam、Epic Games Store、GOG、itch.io、Indiegalaの5つのストアからゲームの価格情報を比較できます。
+          無料ゲームや割引情報をリアルタイムで確認し、お得にゲームをゲットしましょう。
+        </p>
+        <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded">
+          <p className="text-indigo-700 text-sm">
+            <strong>特徴：</strong>複数ストアの価格比較 | 無料ゲーム情報 | セール情報 | 日本円表示対応
+          </p>
+        </div>
+      </div>
+
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">ゲーム価格比較</h1>
-        <span className="text-sm text-gray-500">{filteredGames.length} 件の情報を表示中</span>
+        <h2 className="text-xl font-semibold text-gray-800">{filteredGames.length} 件のゲーム情報</h2>
       </div>
 
       <div className="mb-4">
@@ -289,6 +301,26 @@ export default function GameList({ initialData }: { initialData: Game[] }) {
           </button>
         </div>
       )}
+
+      <section className="mt-12 bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">GameDashについて</h2>
+        <div className="text-gray-600 space-y-3 text-sm">
+          <p>
+            GameDashは、PCゲームの価格情報を一か所で比較できる無料サービスです。
+            Steam、Epic Games Store、GOG、itch.io、Indiegalaの5つのストアから
+            無料ゲームや割引情報をリアルタイムで取得しています。
+          </p>
+          <p>
+            ゲームタイトルやストア名で検索して、最適なゲームfindingが可能です。
+            価格は日本円（JPY）と米ドル（USD）の両方で表示されるため、
+            国内のストアとの比較も簡単に行えます。
+          </p>
+          <p>
+            定期的にデータを更新しているため、最新のセール情報や無料ゲーム情報を確認できます。
+            お得なゲームを見逃さないように、ブックマークして活用してください。
+          </p>
+        </div>
+      </section>
     </main>
   );
 }

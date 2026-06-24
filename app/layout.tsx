@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GameDash - ゲーム価格比較サイト",
-  description: "Epic Games、GOG、Steamなどのゲーム価格を比較。無料ゲームや割引情報をリアルタイムで確認できます。",
+  title: "GameDash - ゲーム価格比較サイト | Steam、Epic、GOGの価格を一か所で",
+  description: "Steam、Epic Games Store、GOG、itch.io、Indiegalaのゲーム価格を比較。無料ゲームや割引情報をリアルタイムで確認。日本円表示対応。",
+  keywords: "ゲーム, 価格比較, Steam, Epic Games, GOG, 無料ゲーム, セール, GameDash",
 };
 
 export default function RootLayout({
@@ -45,6 +46,9 @@ export default function RootLayout({
               <Link href="/" className="hover:text-indigo-200 transition-colors">
                 ホーム
               </Link>
+              <Link href="/about" className="hover:text-indigo-200 transition-colors">
+                運営者情報
+              </Link>
               <Link href="/privacy-policy" className="hover:text-indigo-200 transition-colors">
                 プライバシー
               </Link>
@@ -61,6 +65,9 @@ export default function RootLayout({
         <footer className="bg-gray-800 text-gray-400 py-8 mt-auto">
           <div className="max-w-5xl mx-auto px-8">
             <div className="flex flex-wrap gap-8 justify-center mb-4">
+              <Link href="/about" className="hover:text-white transition-colors">
+                運営者情報
+              </Link>
               <Link href="/privacy-policy" className="hover:text-white transition-colors">
                 プライバシーポリシー
               </Link>
