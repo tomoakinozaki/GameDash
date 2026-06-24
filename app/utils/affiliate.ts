@@ -29,7 +29,7 @@ export const getAffiliateUrl = (game: GameForAffiliate): string => {
 // Amazonアフィリエイトリンクを生成
 export const getAmazonUrl = (gameTitle: string): string => {
   const affiliateId = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE;
-  const searchQuery = encodeURIComponent(`${gameTitle} PCゲーム`);
+  const searchQuery = encodeURIComponent(gameTitle);
   
   if (affiliateId) {
     return `https://www.amazon.co.jp/s?k=${searchQuery}&tag=${affiliateId}`;
