@@ -145,7 +145,7 @@ async function syncFreeGames() {
       const discountRate = Math.round(parseFloat(deal.savings));
 
       // Epic Games Storeの検索URLを使用
-      const searchUrl = `https://store.epicgames.com/ja/browse?q=${encodeURIComponent(deal.title)}&sortBy=relevancy&sortDir=DESC&count=40`;
+      const searchUrl = `https://store.epicgames.com/ja/browse?q=${encodeURIComponent(deal.title)}`;
 
       return {
         game_title: deal.title,
